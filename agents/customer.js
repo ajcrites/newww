@@ -272,26 +272,28 @@ Customer.prototype.getLicenseIdForOrg = function(orgName, callback) {
 // should this go into the org agent instead?
 Customer.prototype.getAllSponsorships = function(licenseId, callback) {
   var url = this.host + '/sponsorship/' + licenseId;
-  Request.get({
-    url: url,
-    json: true
-  }, function(err, resp, body) {
-    if (err) {
-      return callback(err);
-    }
+  return new P(function(accept, reject) {
+    Request.get({
+      url: url,
+      json: true
+    }, function(err, resp, body) {
+      if (err) {
+        return reject(err);
+      }
 
-    if (resp.statusCode === 404) {
-      return callback(null, []);
-    }
+      if (resp.statusCode === 404) {
+        return accept([]);
+      }
 
-    if (resp.statusCode >= 400) {
-      err = new Error(body);
-      err.statusCode = resp.statusCode;
-      return callback(err);
-    }
+      if (resp.statusCode >= 400) {
+        err = new Error(body);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
 
-    return callback(null, body);
-  });
+      return accept(body);
+    });
+  }).nodeify(callback);
 };
 
 Customer.prototype.extendSponsorship = function(licenseId, name, callback) {
