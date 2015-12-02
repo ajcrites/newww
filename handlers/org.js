@@ -336,7 +336,6 @@ exports.deleteOrg = function(request, reply) {
   }
 
   var orgToDelete = request.params.org;
-  var loggedInUser = request.loggedInUser && request.loggedInUser.name;
 
   request.customer.getSubscriptions(function(err, subscriptions) {
     if (err) {
@@ -353,7 +352,7 @@ exports.deleteOrg = function(request, reply) {
       return reply.redirect('/settings/billing');
     }
 
-    request.customer.cancelSubscription(subscription.id, function(err, sub) {
+    request.customer.cancelSubscription(subscription.id, function(err) {
       if (err) {
         request.logger.error(err);
         return reply.view('errors/internal', err);
