@@ -395,18 +395,18 @@ describe("Customer", function() {
 
   });
 
-  describe("getLicenseIdForOrg", function() {
+  describe("getLicenseForOrg", function() {
     it('returns an error if customer does not exist', function(done) {
       var Customer = new CustomerAgent('bob');
       var customerMock = nock(Customer.host)
         .get('/customer/bob/stripe/subscription?org=bigco')
         .reply(404);
 
-      Customer.getLicenseIdForOrg('bigco', function(err, licenseId) {
+      Customer.getLicenseForOrg('bigco', function(err, license) {
         customerMock.done();
         expect(err).to.exist();
         expect(err.message).to.equal('Customer not found');
-        expect(licenseId).to.not.exist();
+        expect(license).to.not.exist();
         done();
       });
     });
@@ -417,18 +417,18 @@ describe("Customer", function() {
         .get('/customer/bob/stripe/subscription?org=bigco')
         .reply(200, []);
 
-      Customer.getLicenseIdForOrg('bigco', function(err, licenseId) {
+      Customer.getLicenseForOrg('bigco', function(err, license) {
         customerMock.done();
         expect(err).to.exist();
         expect(err.statusCode).to.equal(404);
         expect(err.message).to.equal('No license for org bigco found');
-        expect(licenseId).to.not.exist();
+        expect(license).to.not.exist();
         done();
       });
     }) ;
 
 
-    it('gets the license id for an org', function(done) {
+    it('gets the license for an org', function(done) {
       var Customer = new CustomerAgent('bob');
       var customerMock = nock(Customer.host)
         .get('/customer/bob/stripe/subscription?org=bigco')
@@ -447,10 +447,10 @@ describe("Customer", function() {
           "status": "active"
         }]);
 
-      Customer.getLicenseIdForOrg('bigco', function(err, licenseId) {
+      Customer.getLicenseForOrg('bigco', function(err, license) {
         customerMock.done();
         expect(err).to.be.null();
-        expect(licenseId).to.equal(1);
+        expect(license.license_id).to.equal(1);
         done();
       });
     });

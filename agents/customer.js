@@ -231,7 +231,7 @@ Customer.prototype.cancelSubscription = function(subscriptionId, callback) {
   });
 };
 
-Customer.prototype.getLicenseIdForOrg = function(orgName, callback) {
+Customer.prototype.getLicenseForOrg = function(orgName, callback) {
   var url = this.host + '/customer/' + this.name + '/stripe/subscription';
 
   return new P(function(accept, reject) {
@@ -264,7 +264,7 @@ Customer.prototype.getLicenseIdForOrg = function(orgName, callback) {
         return reject(err);
       }
 
-      return accept(body[0].license_id);
+      return accept(body[0]);
     });
   }).nodeify(callback);
 };
