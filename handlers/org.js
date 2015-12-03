@@ -291,15 +291,31 @@ exports.updateOrg = function(request, reply) {
     return reply.redirect('/org');
   }
 
-  if (request.payload.updateType === "addUser") {
-    exports.addUserToOrg(request, reply);
-  } else if (request.payload.updateType === "deleteUser") {
-    exports.removeUserFromOrg(request, reply);
-  } else if (request.payload.updateType === "updatePayStatus") {
-    exports.updateUserPayStatus(request, reply);
-  } else if (request.payload.updateType === "deleteOrg") {
-    exports.deleteOrg(request, reply);
+  switch (request.payload.updateType) {
+    case 'addUser':
+      return exports.addUserToOrg(request, reply);
+    case 'deleteUser':
+      return exports.removeUserFromOrg(request, reply);
+    case 'updatePayStatus':
+      return exports.updateUserPayStatus(request, reply);
+    case 'deleteOrg':
+      return exports.deleteOrg(request, reply);
+    case 'restartOrg':
+      return exports.restartOrg(request, reply);
+    default:
+      return request.saveNotifications([
+        P.reject("Incorrect updateType passed")
+      ]).then(function(token) {
+        var url = request.info.referrer || '/org/' + request.params.org;
+        var param = token ? "?notice=" + token : "";
+        url += param;
+        return reply.redirect(url);
+      }).catch(function(err) {
+        request.logger.error(err);
+      });
+
   }
+
 };
 
 exports.deleteOrgConfirm = function(request, reply) {
