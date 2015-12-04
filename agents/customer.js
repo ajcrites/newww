@@ -211,24 +211,26 @@ Customer.prototype.createSubscription = function(planInfo, callback) {
 
 Customer.prototype.cancelSubscription = function(subscriptionId, callback) {
   var url = this.host + '/customer/' + this.name + '/stripe/subscription/' + subscriptionId;
-  Request.del({
-    url: url,
-    json: true
-  }, function(err, resp, body) {
-    if (resp.statusCode === 404) {
-      err = new Error('License not found');
-      err.statusCode = resp.statusCode;
-      return callback(err);
-    }
+  return new P(function(accept, reject) {
+    Request.del({
+      url: url,
+      json: true
+    }, function(err, resp, body) {
+      if (resp.statusCode === 404) {
+        err = new Error('License not found');
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
 
-    if (resp.statusCode >= 400) {
-      err = new Error(body);
-      err.statusCode = resp.statusCode;
-      return callback(err);
-    }
+      if (resp.statusCode >= 400) {
+        err = new Error(body);
+        err.statusCode = resp.statusCode;
+        return reject(err);
+      }
 
-    return callback(null, body);
-  });
+      return accept(body);
+    });
+  }).nodeify(callback);
 };
 
 Customer.prototype.getLicenseForOrg = function(orgName, callback) {
