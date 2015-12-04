@@ -329,13 +329,14 @@ exports.updateOrg = function(request, reply) {
 exports.deleteOrgConfirm = function(request, reply) {
   request.customer.getSubscriptions().then(selectSubscription).then(function(subscription) {
     return reply.view('user/billing-confirm-cancel', {
-      subscription: subscription
+      subscription: subscription,
+      referrer: request.info.referrer || "/settings/billing"
     });
   }, function(err) {
     if (err.statusCode == 404) {
       return reply.view('errors/not-found').code(404);
     } else {
-      return reply(err)
+      return reply(err);
     }
   });
 
