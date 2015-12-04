@@ -4,7 +4,7 @@
 
   <hgroup>
     {{#if features.org_billing}}
-      <h1>Subscriptions</h1>
+      <h1>subscriptions</h1>
     {{else}}
       {{#if customer}}
       <h1>your billing info</h1>
@@ -76,7 +76,7 @@
       <table class="subscriptions">
         <thead>
           <tr>
-            <th>name</th>
+            <th>Name</th>
             <th>Next Billing Date</th>
             <th>Monthly Fee</th>
             <th>actions</th>
@@ -94,18 +94,18 @@
             {{#if cancel_at_period_end}}
               <td>--</td>
             {{else}}
-              <td data-date="{{next_billing_date}}" data-date-format="%e-%b-%y">
+              <td data-date="{{next_billing_date}}" data-date-format="%b %e, %Y">
                 {{next_billing_date}}
               </td>
             {{/if}}
             <td>{{cost}}</td>
             {{#if cancel_at_period_end}}
-              <td data-date="{{next_billing_date}}" data-date-format="%e-%b-%y">
+              <td data-date="{{next_billing_date}}" data-date-format="%b %e, %Y">
                 Last date - {{next_billing_date}}
               </td>
             {{else}}
               <td>
-                <a href="/org/{{npm_org}}/confirm-delete" class="icon-x delete-package"><span class="a11y-only">Delete Private Modules</span></a>
+                <a href="/org/{{npm_org}}/confirm-delete" class="icon-x delete-package" rel="tipsy" original-title="delete this subscription"><span class="a11y-only">Delete Private Modules</span></a>
               </td>
             {{/if}}
           </tr>
@@ -119,7 +119,7 @@
             <td colspan="4">You do not have a Personal Plan</td>
           </tr>
           <tr class="add-more">
-            <td colspan="4"><a href="/signup"> + sign up for a Personal Plan</a></td>
+            <td colspan="4"><a href="/settings/billing{{#if ../../../features.org_billing}}#payment-information{{/if}}"> + sign up for a Personal Plan</a></td>
           </tr>
         </tbody>
       </table>
@@ -130,12 +130,12 @@
       <table class="subscriptions push-down">
         <thead>
           <tr>
-            <th>name</th>
+            <th>Name</th>
             <th>Paid Users</th>
             <th>Next Billing Date</th>
             <th>Monthly Fee</th>
-            <th>cancellation date</th>
-            <th>actions</th>
+            <th>Cancellation Date</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -146,20 +146,20 @@
               {{#if cancel_at_period_end}}
                 <td>--</td>
               {{else}}
-                <td data-date="{{next_billing_date}}" data-date-format="%e-%b-%y">
+                <td data-date="{{next_billing_date}}" data-date-format="%b %e, %Y">
                   {{next_billing_date}}
                 </td>
               {{/if}}
               <td>${{cost}}</td>
               {{#if cancel_at_period_end}}
-                <td data-date="{{next_billing_date}}" data-date-format="%e-%b-%y">
+                <td data-date="{{next_billing_date}}" data-date-format="%b %e, %Y">
                   Last date - {{next_billing_date}}
                 </td>
                 <td></td>
               {{else}}
                   <td>--</td>
                   <td>
-                    <a href="/org/{{npm_org}}/confirm-delete" class="icon-x delete-package"><span class="a11y-only">Delete Org {{npm_org}}</span></a>
+                    <a href="/org/{{npm_org}}/confirm-delete" class="icon-x delete-package" rel="tipsy" original-title="delete this subscription"><span class="a11y-only">Delete Org {{npm_org}}</span></a>
                   </td>
               {{/if}}
             </tr>
