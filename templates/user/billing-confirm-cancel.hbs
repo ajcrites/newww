@@ -2,7 +2,7 @@
   {{#if subscription.privateModules}}
     <p>Are you sure you want to cancel your private modules subscription?</p>
   {{else}}
-    <p>Are you sure you want to cancel the subscription for the organization <strong>@{{subscription.npm_org}}</strong>?<</p>
+    <p>Are you sure you want to cancel the subscription for the organization <strong>@{{subscription.npm_org}}</strong>?</p>
   {{/if}}
   {{> form_security}}
   <input type="hidden" name="updateType" value="deleteOrg">
