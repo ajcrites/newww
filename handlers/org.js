@@ -680,3 +680,56 @@ exports.getUser = function getUser(request, reply) {
 
     });
 };
+
+exports.restartOrg = function(request, reply) {
+  var opts = {};
+  var orgName = request.params.org;
+
+  request.customer.getLicenseForOrg(orgName)
+    .then(function(license) {
+      opts.oldLicense = license;
+      return request.customer.getAllSponsorships(license.license_id);
+    })
+    .then(function(sponsorships) {
+      opts.sponsorships = sponsorships;
+      return request.customer.cancelSubscription(opts.oldLicense.id);
+    })
+    .then(function() {
+      var planInfo = {
+        "npm_org": orgName,
+        "plan": "npm-paid-org-7",
+        "quantity": 2
+      };
+      return request.customer.createSubscription(planInfo);
+    })
+    .then(function(subscription) {
+      var newSponsorships = opts.sponsorships.filter(function(sponsorship) {
+        return sponsorship.verified;
+      })
+        .map(function(sponsorship) {
+          return request.customer.swapSponsorship(sponsorship.npm_user, opts.oldLicense.license_id, subscription.license_id);
+        });
+      return P.all(newSponsorships);
+    })
+    .then(function() {
+      return reply.redirect('/org/' + orgName);
+    })
+    .catch(function(err) {
+      request.logger.error(err);
+
+      if (err.statusCode < 500) {
+        return request.saveNotifications([
+          P.reject(err.message)
+        ]).then(function(token) {
+          var url = '/settings/billing';
+          var param = token ? "?notice=" + token : "";
+          url = url + param;
+          return reply.redirect(url);
+        }).catch(function(err) {
+          request.logger.log(err);
+        });
+      } else {
+        return reply.view('errors/internal', err);
+      }
+    });
+};

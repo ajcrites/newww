@@ -393,3 +393,16 @@ Customer.prototype.removeSponsorship = function(npmUser, licenseId, callback) {
 };
 
 Customer.prototype.declineSponsorship = Customer.prototype.revokeSponsorship = Customer.prototype.removeSponsorship;
+
+Customer.prototype.swapSponsorship = function(npmUser, oldLicenseId, newLicenseId) {
+  var self = this;
+  var newSponsorship = {};
+  return self.extendSponsorship(newLicenseId, npmUser)
+    .then(function(sponsorship) {
+      newSponsorship = sponsorship;
+      return self.revokeSponsorship(npmUser, oldLicenseId);
+    })
+    .then(function() {
+      return self.acceptSponsorship(newSponsorship.verification_key);
+    });
+};
