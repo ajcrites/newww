@@ -50,11 +50,7 @@ customer.getBillingInfo = function(request, reply) {
       request.logger.error('unable to get subscriptions for ' + request.loggedInUser.name);
       request.logger.error(err);
       return [];
-    }).then(function(subscriptions) {
-
-      var subs = subscriptions.filter(function(sub) {
-        return sub.status === "active";
-      });
+    }).then(function(subs) {
 
       var privateModules = [],
         orgs = [];
