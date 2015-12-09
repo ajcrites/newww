@@ -179,6 +179,7 @@ customer.subscribe = function(request, reply) {
   var loggedInUser = request.loggedInUser.name;
 
   Joi.validate(request.payload, subscriptionSchema, function(err, planData) {
+
     if (err) {
       var notices;
 
@@ -210,10 +211,6 @@ customer.subscribe = function(request, reply) {
       plan: plans[planType]
     };
 
-    if (planType === 'orgs' && !request.features.org_billing) {
-      return reply.redirect('/settings/billing');
-    }
-
     if (request.loggedInUser.customer) {
       return subscribe();
     } else {
@@ -221,7 +218,7 @@ customer.subscribe = function(request, reply) {
     }
 
     function subscribe() {
-      if (request.features.org_billing && planType === 'orgs') {
+      if (planType === 'orgs') {
         return subscribeToOrg();
       } else {
         return request.customer.createSubscription(planInfo, function(err, subscriptions) {
@@ -365,4 +362,8 @@ customer.subscribe = function(request, reply) {
       });
     }
   });
+};
+
+customer.subscribePersonalConfirm = function(request, reply) {
+  return reply.view('user/billing-confirm-personal', {});
 };
