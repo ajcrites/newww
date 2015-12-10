@@ -326,7 +326,7 @@ exports.updateOrg = function(request, reply) {
       return request.saveNotifications([
         P.reject("Incorrect updateType passed")
       ]).then(function(token) {
-        var url = request.info.referrer || '/org/' + request.params.org;
+        var url = '/org/' + request.params.org;
         var param = token ? "?notice=" + token : "";
         url += param;
         return reply.redirect(url);
@@ -340,9 +340,16 @@ exports.updateOrg = function(request, reply) {
 
 exports.deleteOrgConfirm = function(request, reply) {
   request.customer.getSubscriptions().then(selectSubscription).then(function(subscription) {
+    var referrer = URL.parse(request.info.referrer).pathname || "";
+    var invalidURL = referrer.split("/").some(function(path) {
+      return !!invalidUserName(path);
+    });
+
+    referrer = invalidURL ? "/settings/billing" : referrer;
+
     return reply.view('user/billing-confirm-cancel', {
       subscription: subscription,
-      referrer: request.info.referrer || "/settings/billing"
+      referrer: referrer || "/settings/billing"
     });
   }, function(err) {
     if (err.statusCode == 404) {
